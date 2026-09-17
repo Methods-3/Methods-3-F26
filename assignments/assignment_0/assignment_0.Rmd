@@ -1,0 +1,86 @@
+---
+title: "assignment_0, Methods 3, 2026"
+date: "2026-09-17"
+output: pdf_document
+---
+
+<style type="text/css">
+  body{
+  font-size: 14pt;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+REMEMBER: In your portfolio, make sure to include code that can reproduce the answers requested in the exercises below (__MAKE A KNITTED VERSION__). If it does not KNIT, it cannot be part of your portfolio
+
+# Assignment 0: Using multilevel modelling to model hierarchical data
+In this assignment we will be investigating the _politeness_ dataset of Winter and Grawunder (2012) and apply basic methods of multilevel modelling. 
+
+## Indicating when the author changes
+  
+If you write this in a study group, clearly indicate when the author changes like this
+
+--------------------------------------------------- *Name of author 1* ---------------------------------------------------  
+answering question 1
+
+--------------------------------------------------- *Name of author 2* ---------------------------------------------------  
+answering question 2
+
+## Dataset
+The dataset has been shared on GitHub, so make sure that the csv-file is on your current path. Otherwise you can supply the full path.
+
+```{r, eval=FALSE}
+politeness <- read.csv('politeness.csv') ## read in data
+```
+
+# Exercises and objectives
+The objectives of the exercises of this assignment are:  
+1) Learning to recognize hierarchical structures within datasets and describing them  
+2) Creating simple multilevel models and assessing their fitness  
+3) Working both with linear predictors and categorical predictors 
+
+REMEMBER: In your report, make sure to include code that can reproduce the answers requested in the exercises below, i.e. make a knitted version  
+REMEMBER: This assignment will be part of your final portfolio
+
+## Exercise A - describing the dataset and understanding the nature of its variables
+
+1) Describe the dataset, such that someone who happened upon this dataset could understand the 7 variables and what they contain.  This article,https://www.sciencedirect.com/science/article/pii/S0095447012000666,  might help (see Table 1)
+    i. in this description, categorise the 7 variables into either nominal, ordinal, interval or ratio  
+    ii. include number of observations and missing observations  
+    iii. what do you think are the response variables, i.e. what could work as *y* in fitting models?
+2) Do some analyses with *scenario* as an independent variable  
+    i. fit a multilevel model with _f0mn_ as the dependent variable and *scenario* as the independent variable. Model different intercepts for each _subject_
+    ii. now fit a similar model, but this time have _scenario_ be a nominal variable
+    iii. judging from the residual variance, (_sigma(model)_), what difference does it make whether you encode _scenario_ as a categorical variable or as an integer variable? Why do you get the difference?
+    iv. plot the model matrices, _X_, from the two models, using _image.plot_ from the _fields_ package; describe the two models, and describe the difference between the two kinds of models fitted from these plots  
+3) Which variables should be indicated as nominal/categorical?  
+    i. use _factor()_ to explicitly change these variables into the nominal/categorical category
+    
+
+## Exercise B - pooling - linear regression
+
+1) Across _scenario's_, Do a no-pooling model, a complete-pooling model and a partial-pooling model with _total_duration_ as the dependent variable and *f0mn* as the independent variable. Model individual intercepts for each _scenario_ for the partial pooling and the no-pooling models
+    i. compare the residual variance between the three models - which results in explaining most variance?
+    ii. for the partial-pooling model, add different intercepts for each _subject_ and compare the residual variance in this model with the remaining three  
+    iii. how would you model a no-pooling model that took both _subject_ and _scenario_ into account?
+    iv. each _subject_ was exposed to each _scenario_; what is the effect of using the second-level effect (1 + subject:scenario) with the first-level effects already modeled?
+2) Plot a model for each subject, ignoring scenarios for now `total_duration ~ f0mn + (1 | subject)`
+    i. create a plot with a subplot for each subject. This plot should contain the observed values for the dependent values and the fitted lines for each subject, ignoring differences in _scenarios_
+    ii. describe what the plots and the model reveal about the relationship between _total_duration_ and _f0mn_
+    iii. why do you think the slope is negative? (check the paper this is based on)
+
+
+## Exercise C - pooling - categorical predictors
+
+1) Fit a partial-pooling model with the dependent variable _f0mn_ and the independent variable _attitude_. For second-level effects, include intercepts for _subject_ and _scenario_
+    i. explain what the first-level effects say about the effect of attitude on fundamental frequency, _f0mn_, and explain what the two second level effects say about the variance around those group level effects
+    ii. also plot the _X_ and _Z_ matrices using _image.plot()_ (for the _Z_, you will have to apply _as.matrix()_ as _image.plot()_ does not handle sparse matrices). Explain what they mean
+    iii. fit an identical model, except that you remove _scenario_ from the second-level effects. For both models, find the std. errors associated with the group-level effect of attitude - how do they differ and why?
+2) Making the second-level effects more complicated -  now fit the two models with the formulas: `f0mn ~ attitude * gender + (1 | subject) + (1 | scenario)` and `f0mn ~ attitude * gender + (gender | subject) + (1 | scenario)` 
+    i. Explain what each of the group-level effects and _subject_ and _scenario_ effects mean
+    ii. compare the within-group standard deviation, $\hat\sigma_y$ between the two models - why don't they differ?
+    iii. fit this model `f0mn ~ attitude * gender + (gender | subject) + (gender | scenario)`; why does it give a singular fit? and why would you expect this given the design of the study?
+    
