@@ -1,0 +1,57 @@
+---
+title: "assignment_1, Methods 3, 2026"
+date: "2026-09-24"
+output: html_document
+---
+
+REMEMBER: In your portfolio, make sure to include code that can reproduce the answers requested in the exercises below (**MAKE A KNITTED VERSION**). If it does not KNIT, it cannot be part of your portfolio
+
+# Exercises and objectives
+
+The objectives of the exercises of this assignment are:\
+A) Download and organise the data and model\
+B) Fit multilevel models for binomial data\
+C) Fit multilevel models for count data
+
+## Exercise A - Download and organise the data and model
+
+Go to <https://osf.io/ecxsj/files/> and download the files associated with Experiment 2 (there should be 29).\
+The data is associated with Experiment 2 of the article at the following DOI <https://doi.org/10.1016/j.concog.2019.03.007>
+
+1)  Put the data from all subjects into a single data frame\
+2)  Describe the data and construct extra variables from the existing variables
+    i.  add a variable to the data frame and call it *correct* (have it be a *logical* variable). Assign a 1 to each row where the subject indicated the correct answer and a 0 to each row where the subject indicated the incorrect answer (**Hint:** the variable *obj.resp* indicates whether the subject answered "even", *e* or "odd", *o*, and the variable *target_type* indicates what was actually presented.
+    ii. describe what the following variables in the data frame contain, *trial.type*, *pas*, *trial*, *target.contrast*, *cue*, *task*, *target_type*, *rt.subj*, *rt.obj*, *obj.resp*, *subject* and *correct*. (That means you can ignore the rest of the variables in your description). For each of them, indicate and argue for what `class` they should be classified into, e.g. *factor*, *numeric* etc., and apply that class! (**Don't code variables as ordinal; if you think they are ordinal, just code them as a factor**)
+
+## Exercise B - Fit multilevel models for binomial data
+
+We **only** look at the *experiment* trials (*trial.type*)
+
+1)  Fit a multilevel model that models *correct* as dependent on *task* with a unique intercept for each *subject*
+    i.  does *task* explain performance?\
+    ii. add *pas* as a main effect on top of *task* - what are the consequences of that?\
+    iii. now fit a multilevel model that models *correct* as dependent on *pas* with a unique intercept for each *subject*
+    iv. finally, fit a model that models the interaction between *task* and *pas* and their main effects, still with a unique intercept for each *subject*\
+    v.  describe in your own words which model is the best in explaining the variance in accuracy, and based on your chosen model - write a short summary on what this says about accuracy as dependent on *pas* and *task*. You should include at least one informative plot that shows the estimated probability of being correct for each of the levels of *task* and *pas* (and their interaction if you included that in your model).
+
+## Exercise C - Fit multilevel models for count data
+
+We **only** look at the *experiment* trials (*trial.type*)
+
+1)  Initialise a new data frame, `data.count`. *count* should indicate the number of times they categorized their experience as *pas* 1-4 for each *task*. I.e. the data frame would have for subject 1: for task:singles, pas1 was used \# times, pas2 was used \# times, pas3 was used \# times and pas4 was used \# times. You would then do the same for task:pairs and task:quadruplet
+
+```{r}
+## you can start from this if you want to, but you can also make your own from scratch
+data.count <- data.frame(count = numeric(), 
+                         pas = numeric(), ## remember to make this into a factor afterwards
+                         task = numeric(), ## and this too
+                         subject = numeric()) ## and this too
+```
+
+2)  Now fit a multilevel model that models a unique "slope" for *pas* for each *subject*, $Z$, with the interaction between *pas* and *task* and their main effects being modelled on the first level, $X$
+    i.  which family should be used?\
+    ii. why is a slope for *pas* not really being modelled, and what are we modelling instead?\
+    iii. if you get a convergence error, try another algorithm (the default is the *Nelder_Mead*) - try (*bobyqa*) for which the `dfoptim` package is needed. In `glmer`, you can add the following for the `control` argument: `glmerControl(optimizer="bobyqa")` (if you are interested, also have a look at the function `allFit`)
+    iv. when you have a converging fit - fit a model with only the main effects of *pas* and *task*. Compare this with the model that also includes the interaction
+    v.  indicate which of the two models, you would choose and why\
+    vi. based on your chosen model - write a short summary on what this says about the distribution of ratings as dependent on *pas* and *task* and their interaction. You should include at least one informative plot that shows the estimated rate of events for each of the levels of *task* and *pas* (and their interaction if you included that in your model)
